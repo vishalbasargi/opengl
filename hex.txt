@@ -1,0 +1,62 @@
+#include <GL/glut.h>
+#include <cmath>
+
+const double TWO_PI = 6.2831853;
+const int NUM_VERTICES = 6;
+GLsizei winWidth = 800, winHeight = 600;
+GLfloat hexRadius;
+
+void updateHexVertices(GLfloat* vertices, GLsizei width, GLsizei height) {
+    GLfloat centerX = width / 2.0, centerY = height / 2.0;
+    hexRadius = fmin(width, height) / 4.0;
+
+    for (int k = 0; k < NUM_VERTICES; ++k) {
+        double theta = TWO_PI * k / NUM_VERTICES;
+        vertices[2 * k] = centerX + hexRadius * cos(theta);
+        vertices[2 * k + 1] = centerY + hexRadius * sin(theta);
+    }
+}
+
+void init() {
+    glClearColor(1.0, 1.0, 1.0, 0.0); // White background
+    glColor3f(0.0, 0.0, 0.0); // Black hexagon
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(0.0, winWidth, 0.0, winHeight);
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    GLfloat vertices[NUM_VERTICES * 2];
+    updateHexVertices(vertices, winWidth, winHeight);
+
+    glBegin(GL_POLYGON);
+    for (int k = 0; k < NUM_VERTICES; ++k)
+        glVertex2f(vertices[2 * k], vertices[2 * k + 1]);
+    glEnd();
+
+    glFlush();
+}
+
+void reshape(int newWidth, int newHeight) {
+    winWidth = newWidth;
+    winHeight = newHeight;
+    glViewport(0, 0, winWidth, winHeight);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, winWidth, 0.0, winHeight);
+    display();
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(winWidth, winHeight);
+    glutCreateWindow("Hexagon Size Based on Window Shape");
+    init();
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutMainLoop();
+    return 0;
+}

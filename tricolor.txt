@@ -1,0 +1,58 @@
+#include <GL/glut.h>
+#include <cstdlib> // For rand()
+
+// Initial color of the triangle
+float color[3] = { 1.0f, 0.0f, 0.0f }; // Red
+
+// Function to change the color of the triangle
+void changeColor() {
+    color[0] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    color[1] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    color[2] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    glutPostRedisplay(); // Request to redraw the scene
+}
+
+// Mouse callback function
+void mouse(int button, int state, int x, int y) {
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        changeColor();
+    }
+}
+
+// Display callback function
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glColor3f(color[0], color[1], color[2]);
+    glBegin(GL_TRIANGLES);
+    glVertex2f(-0.5f, -0.5f);
+    glVertex2f(0.5f, -0.5f);
+    glVertex2f(0.0f, 0.5f);
+    glEnd();
+
+    glFlush();
+}
+
+// Initialize GLUT and OpenGL
+void init() {
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // White background
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-1.0, 1.0, -1.0, 1.0); // Orthographic projection
+}
+
+// Main function
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("OpenGL Triangle with Color Change on Click");
+
+    init();
+    glutDisplayFunc(display);
+    glutMouseFunc(mouse);
+
+    glutMainLoop();
+    return 0;
+}
